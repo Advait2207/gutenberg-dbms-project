@@ -172,11 +172,11 @@ public class EditingService {
         System.out.print("Author Person ID: ");
         int personId = scanner.nextInt(); scanner.nextLine();
         System.out.print("Topic: ");
-        String topic = scanner.nextLine();
+        String topic = scanner.nextLine().trim();
         System.out.print("Date written (YYYY-MM-DD): ");
-        String date = scanner.nextLine();
+        String date = scanner.nextLine().trim();
         System.out.print("Full text: ");
-        String fullText = scanner.nextLine();
+        String fullText = scanner.nextLine().trim();
 
         String sql = "INSERT INTO ARTICLE (issue_id, article_number, title, person_id, topic, date_written, full_text) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -218,15 +218,15 @@ public class EditingService {
         System.out.print("Chapter Number: ");
         int chapterNo = scanner.nextInt(); scanner.nextLine();
         System.out.print("Title: ");
-        String title = scanner.nextLine();
+        String title = scanner.nextLine().trim();
         System.out.print("Author Person ID: ");
         int personId = scanner.nextInt(); scanner.nextLine();
         System.out.print("Topic: ");
-        String topic = scanner.nextLine();
+        String topic = scanner.nextLine().trim();
         System.out.print("Date written (YYYY-MM-DD): ");
-        String date = scanner.nextLine();
+        String date = scanner.nextLine().trim();
         System.out.print("Full text: ");
-        String fullText = scanner.nextLine();
+        String fullText = scanner.nextLine().trim();
 
         String sql = "INSERT INTO CHAPTER (edition_id, chapter_number, title, person_id, topic, date_written, full_text) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
