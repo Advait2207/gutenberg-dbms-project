@@ -333,7 +333,7 @@ public class DistributionService {
     }
 
     // ── 35. Record distributor payment ───────────────────────────────────────
-    static void recordDistributorPayment() throws Exception {
+    static void recordDistributorPayment() {
         System.out.print("Payment ID: ");
         int paymentId = scanner.nextInt();
         System.out.print("Distributor ID: ");
@@ -349,20 +349,45 @@ public class DistributionService {
             return;
         }
 
-        String sql = "INSERT INTO DISTRIBUTOR_PAYMENT (payment_id, distributor_id, amount, payment_date) VALUES (?,?,?,?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, paymentId);
-            ps.setInt(2, distributorId);
-            ps.setBigDecimal(3, amount);
-            ps.setDate(4, java.sql.Date.valueOf(paymentDate));
-            ps.executeUpdate();
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String sql = "INSERT INTO DISTRIBUTOR_PAYMENT (payment_id, distributor_id, amount, payment_date) VALUES (?,?,?,?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, paymentId);
+                ps.setInt(2, distributorId);
+                ps.setBigDecimal(3, amount);
+                ps.setDate(4, java.sql.Date.valueOf(paymentDate));
+                ps.executeUpdate();
+            }
+
+            conn.commit();
             System.out.println("Distributor payment recorded successfully.");
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (Exception rollbackEx) {
+                    // keep flow simple
+                }
+            }
+            System.out.println("Error recording distributor payment - transaction rolled back");
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (Exception e) {
+                    // keep flow simple
+                }
+            }
         }
     }
 
     // ── 36. Allocate payment to order ────────────────────────────────────────
-    static void allocatePaymentToOrder() throws Exception {
+    static void allocatePaymentToOrder() {
         System.out.print("Payment ID: ");
         int paymentId = scanner.nextInt();
         System.out.print("Order ID: ");
@@ -376,14 +401,39 @@ public class DistributionService {
             return;
         }
 
-        String sql = "INSERT INTO PAYMENT_ALLOCATION (payment_id, order_id, allocated_amount) VALUES (?,?,?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, paymentId);
-            ps.setInt(2, orderId);
-            ps.setBigDecimal(3, allocated);
-            ps.executeUpdate();
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String sql = "INSERT INTO PAYMENT_ALLOCATION (payment_id, order_id, allocated_amount) VALUES (?,?,?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, paymentId);
+                ps.setInt(2, orderId);
+                ps.setBigDecimal(3, allocated);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
             System.out.println("Payment allocation recorded successfully.");
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (Exception rollbackEx) {
+                    // keep flow simple
+                }
+            }
+            System.out.println("Error allocating payment - transaction rolled back");
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (Exception e) {
+                    // keep flow simple
+                }
+            }
         }
     }
 
